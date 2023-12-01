@@ -1,63 +1,49 @@
 use std::fs;
 
-const NUMBERS: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-
 pub fn trebuchet() {
     let contents = fs::read_to_string("./src/solutions/day1/input.txt")
         .expect("Should have been able to read the file");
     let mut sum = 0;
-    // let contents = "eight5fourtwotwo";
 
-    for line in contents.lines() {
-        let first: i32 ;
-        let second: i32;
+    for content in contents.lines() {
+        let first: u32;
+        let second: u32;
+        let line = parse_line(content);
 
-        let mut iterable1 = line.chars().enumerate();
+        let mut iterable1 = line.chars();
         loop {
-            let (index, ch) = iterable1.next().unwrap();
+            let ch = iterable1.next().unwrap();
             if ch.is_numeric() {
-                let value = get_value(&line[0..index], false);
-                match value {
-                    Some(number) => first = number,
-                    None => first = ch.to_digit(10).unwrap() as i32
-                }
+                first = ch.to_digit(10).unwrap();
                 break;
             }
         }
 
-        let mut iterable2 = line.chars().rev().enumerate();
+        let mut iterable2 = line.chars().rev();
         loop {
-            let (index, ch) = iterable2.next().unwrap();
+            let ch = iterable2.next().unwrap();
             if ch.is_numeric() {
-                let value = get_value(&line[line.len() - index..], true);
-                match value {
-                    Some(number) => second = number,
-                    None => second = ch.to_digit(10).unwrap() as i32
-                }
+                second = ch.to_digit(10).unwrap();
                 break;
             }
         }
 
         let number = first * 10 + second;
-        sum = sum + number;
+        sum += number;
     }
     println!("{sum}");
 }
 
-fn get_value(x: &str, reverse: bool) -> Option<i32>{
-    for index in 0..x.len() + 1 {
-        for i in 0..9 {
-            if reverse {
-                if x[x.len() - index..].contains(NUMBERS[i]) {
-                    return Some((i + 1) as i32);
-                }
-            } else {
-                if x[..index].contains(NUMBERS[i]) {
-                    return Some((i + 1) as i32);
-                }
-            }
-        }
-    }
-
-    None
+fn parse_line(line: &str) -> String {
+    let mut parsed;
+    parsed = line.replace("one", "o1e");
+    parsed = parsed.replace("two", "t2o");
+    parsed = parsed.replace("three", "t3e");
+    parsed = parsed.replace("four", "f4r");
+    parsed = parsed.replace("five", "f5e");
+    parsed = parsed.replace("six", "s6x");
+    parsed = parsed.replace("seven", "s7n");
+    parsed = parsed.replace("eight", "e8t");
+    parsed = parsed.replace("nine", "n9e");
+    parsed
 }
