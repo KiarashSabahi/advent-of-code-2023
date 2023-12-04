@@ -8,7 +8,7 @@ fn main() {
     for _ in 0..count {
         println!("Start");
         let now = Instant::now();
-        solutions::day3::gear_ratios();
+        solutions::day4::scratchcards();
 
         let elapsed = now.elapsed();
         time += elapsed;
