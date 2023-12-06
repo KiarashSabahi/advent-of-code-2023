@@ -1,12 +1,8 @@
-use core::time;
 use std::fs;
 
 pub fn wait_for_it() {
     let contents = fs::read_to_string("./src/solutions/day6/input.txt")
         .expect("Should have been able to read the file");
-
-//     let contents = "Time:      7  15   30
-// Distance:  9  40  200";
 
     println!("{contents}");
 
@@ -24,7 +20,6 @@ pub fn wait_for_it() {
         let mut count = 0;
         for i in 0..*time {
             let distance = i * (time - i); 
-            println!("time: {} i: {} time - i: {}", time, i, time - i);
             if distance > distances[index] {
                 count += 1;
             }
@@ -33,9 +28,25 @@ pub fn wait_for_it() {
         result *= count;
     }
 
-    println!("{result}");
+    println!("part 1: {result}");
 
     
+    
+
+    let mut lines = contents.lines();
+
+    let time = lines.next().unwrap()[5..].replace(" ", "").parse::<u64>().unwrap();
+
+    let distance = lines.next().unwrap()[9..].replace(" ", "").parse::<u64>().unwrap();
+
+    let mut count = 0;
+    for i in 0..time {
+        let lap = i * (time - i); 
+        if lap > distance {
+            count += 1;
+        }
+    }
+    println!("{count}");
 
 
 }
