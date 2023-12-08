@@ -24,7 +24,7 @@ pub fn scratchcards() {
         }
 
         if matches != 0 {
-            sum += (2_i32.pow(matches - 1));
+            sum += 2_i32.pow(matches - 1);
         }
 
     }
