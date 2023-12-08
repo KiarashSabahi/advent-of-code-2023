@@ -11,30 +11,24 @@ pub fn haunted_wasteland() {
 }
 
 fn part1(input: &String) -> u32 {
-    let mut lines = input.lines();
     let mut map: HashMap<&str, (&str, &str)> = HashMap::new();
-    let steps = lines.next().unwrap().chars().collect::<Vec<char>>();
-    lines.next();
-    for line in lines {
-        map.insert(&line[0..3], (&line[7..10], &line[12..15]));
-    }
+    let steps = parse_map(input, &mut map);
     traverse_1(&map, &steps, "AAA")
 }
 
 fn part2(input: &String) -> u32 {
     let mut map: HashMap<&str, (&str, &str)> = HashMap::new();
-    let steps = parse_map(&input, &mut map);
+    let steps = parse_map(input, &mut map);
     let mut counts  = Vec::new();
     for key in map.keys() {
         if key.ends_with('A') {
             counts.push(traverse_2(&map, &steps, key));
         }
     }
-
     lcm(counts)
 }
 
-fn parse_map<'a>(input: &'a String, map: &mut HashMap<&'a str, (&'a str, &'a str)>) -> (Vec<char>) {
+fn parse_map<'a>(input: &'a str, map: &mut HashMap<&'a str, (&'a str, &'a str)>) -> (Vec<char>) {
     let mut lines = input.lines();
     let steps = lines.next().unwrap().chars().collect::<Vec<char>>();
     lines.next();
@@ -42,7 +36,7 @@ fn parse_map<'a>(input: &'a String, map: &mut HashMap<&'a str, (&'a str, &'a str
         map.insert(&line[0..3], (&line[7..10], &line[12..15]));
     }
 
-    return steps;
+    steps
 }
 
 
@@ -50,7 +44,7 @@ fn traverse_1(map: &HashMap<&str, (&str, &str)>, steps: &Vec<char>, start: &str)
     let mut current = start;
     let mut counter: u32 = 0;
     loop {
-        if current == String::from("ZZZ") {
+        if current.eq("ZZZ"){
             return counter;
         }
         for step in steps {
@@ -69,7 +63,7 @@ fn traverse_2(map: &HashMap<&str, (&str, &str)>, steps: &Vec<char>, start: &str)
     let mut current = start;
     let mut counter: u32 = 0;
     loop {
-        if current.ends_with("Z") {
+        if current.ends_with('Z') {
             return counter;
         }
         for step in steps {
