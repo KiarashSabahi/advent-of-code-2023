@@ -8,7 +8,7 @@ pub fn mirage_maintenance() {
     println!("{}", part2(&contents));
 }
 
-fn part1(input: &String) -> i32 {
+fn part1(input: &str) -> i32 {
     let mut sum = 0;
     for line in input.lines() {
         let nums:Vec<i32> = line.split_whitespace().map(|n| n.parse::<i32>().unwrap()).collect();
@@ -18,7 +18,7 @@ fn part1(input: &String) -> i32 {
     sum
 }
 
-fn part2(input: &String) -> i32 {
+fn part2(input: &str) -> i32 {
     let mut sum = 0;
     for line in input.lines() {
         let nums:Vec<i32> = line.split_whitespace().map(|n| n.parse::<i32>().unwrap()).collect();
@@ -37,7 +37,7 @@ fn recursive_iteration_part1(line: Vec<i32>) -> i32 {
         for i in 0..length-1 {
             next_line.push(line[i + 1] - line[i])
         }
-        return recursive_iteration_part1(next_line) + line[length - 1]
+        recursive_iteration_part1(next_line) + line[length - 1]
     }
 }
 
