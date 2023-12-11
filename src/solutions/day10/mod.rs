@@ -45,7 +45,7 @@ fn part1(input: String) -> usize{
     // println!("{:?}", start_cords);
     let next = get_next_pos('J', 2, 1, 1, 1);
     println!("n: {:?}", page[next.0][next.1]);
-    search(&page, start_cords)
+    search(&page, start_cords).len().div_ceil(2)
 }
 
 fn part2(input: String) -> usize{
@@ -67,53 +67,57 @@ fn part2(input: String) -> usize{
     // println!("{:?}", start_cords);
     let next = get_next_pos('J', 2, 1, 1, 1);
     println!("n: {:?}", page[next.0][next.1]);
-    search(&page, start_cords)
+    let path = search(&page, start_cords);
+    println!("path: {}", path.len());
+    println!("path: {:?}", path);
+    path.len().div_ceil(2)
 }
 
-fn search(page: &Vec<Vec<char>>, start_cord: (usize, usize)) -> usize{
+fn search(page: &Vec<Vec<char>>, start_cord: (usize, usize)) -> Vec<(usize, usize)>{
     //go up
     if start_cord.0 != 0 {
-        let res = iterate(page, start_cord, Up);
-        if res != 0 {
-            return res;
+        let path = iterate(page, start_cord, Up);
+        if path.len() != 0 {
+            return path;
         }
     }
 
 
     //go right
     if start_cord.1 != page[1].len() - 1 {
-        let res = iterate(page, start_cord, Right);
-        if res != 0 {
-            return res;
+        let path = iterate(page, start_cord, Right);
+        if path.len() != 0 {
+            return path;
         }
     }
 
     //go bot
     if start_cord.0 != page.len() - 1 {
-        let res = iterate(page, start_cord, Bottom);
-        if res != 0 {
-            return res;
+        let path = iterate(page, start_cord, Bottom);
+        if path.len() != 0 {
+            return path;
         }
 }
 
     //go left
     if start_cord.1 != 0 {
-        let res = iterate(page, start_cord, Left);
-        if res != 0 {
-            return res;
+        let path = iterate(page, start_cord, Left);
+        if path.len() != 0 {
+            return path;
         }
     }
 
-    0
+    Vec::new()
 }
 
-fn iterate(page: &Vec<Vec<char>>, start_cord: (usize, usize), next_pos: Position) -> usize{
+fn iterate(page: &Vec<Vec<char>>, start_cord: (usize, usize), next_pos: Position) -> Vec<(usize, usize)>{
     println!("\nright: start cord {:?}", start_cord);
     let mut prev_cord = start_cord;
     let mut current_cord = get_cord(next_pos, prev_cord, page);
     let mut len: usize = 0;
+    let mut path: Vec<(usize, usize)> = Vec::new();
     loop {
-        println!("prevous cord {:?}", prev_cord);
+        path.push(prev_cord);
         println!("current cord {:?}", current_cord);
         let next_char = page[current_cord.0][current_cord.1];
         println!("current cord pipe {:?}", next_char);
@@ -122,7 +126,7 @@ fn iterate(page: &Vec<Vec<char>>, start_cord: (usize, usize), next_pos: Position
         }
         if next_char == 'S' {
             println!("len: {}", len.div_ceil(2));
-            return len.div_ceil(2);
+            return path;
         }
         len += 1;
         let next = get_next_pos(next_char, prev_cord.0, prev_cord.1, current_cord.0, current_cord.1);
@@ -133,7 +137,7 @@ fn iterate(page: &Vec<Vec<char>>, start_cord: (usize, usize), next_pos: Position
         prev_cord = current_cord;
         current_cord = (next.0, next.1);
     }
-    0
+    Vec::new()
 }
 
 fn get_cord(pos: Position, cord: (usize, usize), page: &Vec<Vec<char>>) -> (usize, usize) {
