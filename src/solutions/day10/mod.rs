@@ -1,4 +1,5 @@
 use std::fs;
+use std::ops::Add;
 use crate::solutions::day10::Position::{Bottom, Left, Right, Up};
 
 #[derive(PartialEq, Debug)]
@@ -14,15 +15,16 @@ pub fn pipe_maze() {
     let contents = fs::read_to_string("./src/solutions/day10/input.txt")
         .expect("Should have been able to read the file");
     let contents = String::from(
-        "...........
-.S-------7.
-.|F-----7|.
-.||OOOOO||.
-.||OOOOO||.
-.|L-7OF-J|.
-.|II|O|II|.
-.L--JOL--J.
-.....O.....");
+        "FF7FSF7F7F7F7F7F---7
+L|LJ||||||||||||F--J
+FL-7LJLJ||||||LJL-77
+F--JF--7||LJLJ7F7FJ-
+L---JF-JLJ.||-FJLJJ7
+|F|F-JF---7F7-L7L|7|
+|FFJF7L7F-JF7|JL---7
+7-L-JL7||F7|L7F-7F7|
+L.L7LFJ|||||FJL7||LJ
+L7JLJL-JLJLJL--JLJ.L");
     println!("{}", part2(contents));
 }
 
@@ -42,9 +44,6 @@ fn part1(input: String) -> usize{
     }
     println!("page: \n-----\n{}\n-----\n", input);
     println!("start: {:?}", start_cords);
-    // println!("{:?}", start_cords);
-    let next = get_next_pos('J', 2, 1, 1, 1);
-    println!("n: {:?}", page[next.0][next.1]);
     search(&page, start_cords).len().div_ceil(2)
 }
 
@@ -56,26 +55,38 @@ fn part2(input: String) -> usize{
     for (i, line) in lines.enumerate() {
         let mut row: Vec<char> = Vec::new();
         for (j, char) in line.chars().enumerate() {
-            // println!("{} {} {}", char, i, j);
             row.push(char);
             if char == 'S' { start_cords = (i, j) }
         }
         page.push(row);
     }
     println!("page: \n-----\n{}\n-----\n", input);
-    println!("start: {:?}", start_cords);
-    // println!("{:?}", start_cords);
-    let next = get_next_pos('J', 2, 1, 1, 1);
-    println!("n: {:?}", page[next.0][next.1]);
     let path = search(&page, start_cords);
-    println!("path: {}", path.len());
-    println!("path: {:?}", path);
-    path.len().div_ceil(2)
+    let page_width = page[1].len();
+    let page_height = page.len();
+
+    let mut new_string = String::new();
+    
+    for i in 0..page_height {
+        for j in 0..page_width {
+            if path.contains(&(i, j)) {
+                new_string.push(page[i][j]);
+            } else {
+                new_string.push('.');
+            }
+        }
+        new_string += "\n"
+    }
+
+    println!("new maze: \n{}", new_string);
+
+
+    0
 }
 
 fn search(page: &Vec<Vec<char>>, start_cord: (usize, usize)) -> Vec<(usize, usize)>{
     //go up
-    if start_cord.0 != 0 {
+    if start_cord.0 != 0  && ['F', '7', '|'].contains(&page[start_cord.0 - 1][start_cord.1]){
         let path = iterate(page, start_cord, Up);
         if path.len() != 0 {
             return path;
@@ -84,7 +95,7 @@ fn search(page: &Vec<Vec<char>>, start_cord: (usize, usize)) -> Vec<(usize, usiz
 
 
     //go right
-    if start_cord.1 != page[1].len() - 1 {
+    if start_cord.1 != page[1].len() - 1 && ['-', '7', 'J'].contains(&page[start_cord.0][start_cord.1 + 1]) {
         let path = iterate(page, start_cord, Right);
         if path.len() != 0 {
             return path;
@@ -92,7 +103,7 @@ fn search(page: &Vec<Vec<char>>, start_cord: (usize, usize)) -> Vec<(usize, usiz
     }
 
     //go bot
-    if start_cord.0 != page.len() - 1 {
+    if start_cord.0 != page.len() - 1 && ['J', 'L', '|'].contains(&page[start_cord.0 + 1][start_cord.1]) {
         let path = iterate(page, start_cord, Bottom);
         if path.len() != 0 {
             return path;
@@ -100,7 +111,7 @@ fn search(page: &Vec<Vec<char>>, start_cord: (usize, usize)) -> Vec<(usize, usiz
 }
 
     //go left
-    if start_cord.1 != 0 {
+    if start_cord.1 != 0 && ['F', 'L', '-'].contains(&page[start_cord.0][start_cord.1 - 1]) {
         let path = iterate(page, start_cord, Left);
         if path.len() != 0 {
             return path;
@@ -111,26 +122,21 @@ fn search(page: &Vec<Vec<char>>, start_cord: (usize, usize)) -> Vec<(usize, usiz
 }
 
 fn iterate(page: &Vec<Vec<char>>, start_cord: (usize, usize), next_pos: Position) -> Vec<(usize, usize)>{
-    println!("\nright: start cord {:?}", start_cord);
     let mut prev_cord = start_cord;
     let mut current_cord = get_cord(next_pos, prev_cord, page);
     let mut len: usize = 0;
     let mut path: Vec<(usize, usize)> = Vec::new();
     loop {
         path.push(prev_cord);
-        println!("current cord {:?}", current_cord);
         let next_char = page[current_cord.0][current_cord.1];
-        println!("current cord pipe {:?}", next_char);
         if next_char == '.' {
             break;
         }
         if next_char == 'S' {
-            println!("len: {}", len.div_ceil(2));
             return path;
         }
         len += 1;
         let next = get_next_pos(next_char, prev_cord.0, prev_cord.1, current_cord.0, current_cord.1);
-        println!("next: {:?}", next);
         if next == current_cord {
             break;
         }
@@ -186,7 +192,6 @@ fn cord_to_pos(prev_i: usize, prev_j: usize, current_i:usize, current_j:usize) -
 
 fn get_next_pos(ch: char, prev_i: usize, prev_j: usize, current_i:usize, current_j:usize) -> (usize, usize){
     let next_pos = cord_to_pos(prev_i, prev_j, current_i, current_j);
-    println!("next post: {:?}", next_pos);
     match ch {
         'F' => {
             if next_pos == Left {
@@ -198,35 +203,35 @@ fn get_next_pos(ch: char, prev_i: usize, prev_j: usize, current_i:usize, current
         '7' => {
             if next_pos == Right {
                 return (current_i + 1, current_j)
-            } else if next_pos == Up {
+            } else if next_pos == Up && current_j != 0 {
                 return (current_i, current_j - 1)
             }
         }
         '|' => {
-            if next_pos == Up {
+            if next_pos == Up && current_i != 0 {
                 return (current_i - 1, current_j)
             } else if next_pos == Bottom {
                 return (current_i + 1, current_j)
             }
         }
         '-' => {
-            if next_pos == Left {
+            if next_pos == Left && current_j != 0 {
                 return (current_i , current_j - 1)
             } else if next_pos == Right {
                 return (current_i, current_j + 1)
             }
         }
         'J' => {
-            if next_pos == Bottom {
+            if next_pos == Bottom && current_j != 0 {
                 return (current_i , current_j - 1)
-            } else if next_pos == Right {
+            } else if next_pos == Right && current_i != 0 {
                 return (current_i - 1, current_j)
             }
         }
         'L' => {
             if next_pos == Bottom {
                 return (current_i , current_j + 1)
-            } else if next_pos == Left {
+            } else if next_pos == Left && current_i != 0 {
                 return (current_i - 1, current_j)
             }
         }
