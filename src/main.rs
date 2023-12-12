@@ -8,7 +8,7 @@ fn main() {
     for _ in 0..count {
         println!("Start");
         let now = Instant::now();
-        solutions::day12::hot_springs();
+        solutions::day11::cosmic_expansion();
 
         let elapsed = now.elapsed();
         time += elapsed;
