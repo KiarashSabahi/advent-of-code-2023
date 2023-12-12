@@ -1,29 +1,41 @@
 use std::fs;
-use std::str::{Chars, from_utf8};
 
 pub fn hot_springs() {
     let contents = fs::read_to_string("./src/solutions/day12/input.txt")
         .expect("Should have been able to read the file");
-//     let contents = String::from(
-//         "???.### 1,1,3
-// .??..??...?##. 1,1,3
-// ?#?#?#?#?#?#?#? 1,3,1,6
-// ????.#...#... 4,1,1
-// ????.######..#####. 1,6,5
-// ?###???????? 3,2,1");
-    println!("{}", part1(contents));
+    let contents = String::from(
+        ".??..??...?##. 1,1,3");
+    println!("{}", part1(&contents));
+    println!("{}", part2(&contents));
 
 }
 
-fn part1(contents: String) -> usize {
+fn part1(contents: &String) -> usize {
     let mut sum = 0;
     for line in contents.lines() {
-        println!("{}", line);
         let mut split = line.split_whitespace();
         let pattern = split.next().unwrap().as_bytes();
         let numbers = split.next().unwrap().split(',').map(|x| x.parse::<usize>().unwrap()).collect::<Vec<usize>>();
         let x = possible_ways(&pattern, &numbers, 0);
-        println!("possible ways: {}", x);
+        sum += x;
+    }
+    sum
+}
+
+fn part2(contents: &String) -> usize {
+    let mut sum = 0;
+    for line in contents.lines() {
+        let mut split = line.split_whitespace();
+        let pattern = split.next().unwrap();
+        let numbers = split.next().unwrap().split(',').map(|x| x.parse::<usize>().unwrap()).collect::<Vec<usize>>();
+        let mut new_pattern = String::from(pattern);
+        for _ in 0..4 {
+            new_pattern += "?";
+            new_pattern += pattern;
+        }
+        let new_nums = (0..5).flat_map(|_| &numbers).copied().collect::<Vec<_>>();
+        println!("{} {:?}", new_pattern, new_nums);
+        let x = possible_ways(&new_pattern.as_bytes(), &new_nums, 0);
         sum += x;
     }
     sum
