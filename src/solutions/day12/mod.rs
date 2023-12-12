@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 use std::fs;
 
+
+//With help from https://github.com/AxlLind/AdventOfCode2023/blob/main/src/bin/12.rs
 pub fn hot_springs() {
     let contents = fs::read_to_string("./src/solutions/day12/input.txt")
         .expect("Should have been able to read the file");
-    // let contents = String::from(
-    //     ".??..??...?##. 1,1,3");
+
     println!("{}", part1(&contents));
     println!("{}", part2(&contents));
 
@@ -36,7 +37,6 @@ fn part2(contents: &String) -> usize {
             new_pattern += pattern;
         }
         let new_nums = (0..5).flat_map(|_| &numbers).copied().collect::<Vec<_>>();
-        println!("{} {:?}", new_pattern, new_nums);
         let mut cache = HashMap::new();
         let x = possible_ways(&mut cache, &new_pattern.as_bytes(), &new_nums, 0);
         sum += x;
@@ -45,9 +45,6 @@ fn part2(contents: &String) -> usize {
 }
 
 fn possible_ways(cache: &mut HashMap<(usize, usize, usize), usize>,pattern: &[u8], numbers: &[usize], len: usize) -> usize {
-    // println!("{:?}", String::from_utf8(Vec::from(pattern)).unwrap().chars().collect::<Vec<_>>()[0]);
-    // println!("{:?} {:?} {:?}", String::from_utf8(Vec::from(pattern)).unwrap(), numbers, len);
-
     if pattern.is_empty() {
         return if len == 0 && numbers.len() == 0 {
             1
