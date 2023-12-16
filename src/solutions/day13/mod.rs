@@ -41,27 +41,33 @@ fn part1(contents: &String) -> usize {
     let mut sum = 0;
     for map in maps {
         // println!("{:?}", map);
-        sum += check_vertical(&map).unwrap_or(0);
-        sum += check_horizontal(&map).unwrap_or(0) * 100;
-        println!("a  {:?}", check_vertical(&map).unwrap_or(0));
-        println!("a  {:?}", check_horizontal(&map).unwrap_or(0));
+        sum += check_vertical(&map, true).unwrap_or(0);
+        sum += check_horizontal(&map, true).unwrap_or(0) * 100;
+        println!("a  {:?}", check_vertical(&map, true).unwrap_or(0));
+        println!("a  {:?}", check_horizontal(&map, true).unwrap_or(0));
     }
 
     sum
 }
 
-fn check_vertical(map: &Vec<Vec<char>>) -> Option<usize> {
+fn check_vertical(map: &Vec<Vec<char>>, p: bool) -> Option<usize> {
     if map.is_empty() { return None }
     let height = map.len();
     let width = map[0].len();
     'a: for column in 1..width {
         let mut i = column - 1;
         let mut j = column;
+        let mut c = 0;
+
         loop {
             for row in 0..height {
                 // println!("{:?} and {:?}", map[row][i], map[row][j]);
                 if map[row][i] != map[row][j] {
-                    continue 'a;
+                    if c == 0 {
+                        c = 1;
+                    } else {
+                        continue 'a;
+                    }
                 }
             }
             if i > 0 && j < width - 1 {
@@ -79,7 +85,14 @@ fn check_vertical(map: &Vec<Vec<char>>) -> Option<usize> {
             // for row in 0..height {
             //     println!("{:?}", map[row][j]);
             // }
-            return Some(column);
+            if p {
+                if c == 1 {
+                    return Some(column)
+                }
+            } else {
+                return Some(column);
+
+            }
         }
 
     }
@@ -87,7 +100,7 @@ fn check_vertical(map: &Vec<Vec<char>>) -> Option<usize> {
 }
 
 
-fn check_horizontal(map: &Vec<Vec<char>>) -> Option<usize> {
+fn check_horizontal(map: &Vec<Vec<char>>, p: bool) -> Option<usize> {
     if map.is_empty() { return None }
 
     let height = map.len();
@@ -96,11 +109,16 @@ fn check_horizontal(map: &Vec<Vec<char>>) -> Option<usize> {
         // println!("check: {}", row);
         let mut i = row - 1;
         let mut j = row;
+        let mut c = 0;
         loop {
             for column in 0..width {
                 // println!("{:?} and {:?}", map[i][column], map[j][column]);
                 if map[i][column] != map[j][column] {
-                    continue 'a;
+                    if c == 0 {
+                        c = 1;
+                    } else {
+                        continue 'a;
+                    }
                 }
             }
             if i > 0 && j < height - 1 {
@@ -118,9 +136,15 @@ fn check_horizontal(map: &Vec<Vec<char>>) -> Option<usize> {
             // for column in 0..width {
             //     println!("{:?}", map[row][j]);
             // }
-            return Some(row);
-        }
+            if p {
+                if c == 1 {
+                    return Some(row)
+                }
+            } else {
+                return Some(row);
 
+            }
+        }
     }
     None
 }
