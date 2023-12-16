@@ -8,7 +8,7 @@ fn main() {
     for _ in 0..count {
         println!("Start");
         let now = Instant::now();
-        solutions::day15::lens_library();
+        solutions::day16::the_floor_will_be_lava();
 
         let elapsed = now.elapsed();
         time += elapsed;
