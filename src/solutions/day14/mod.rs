@@ -1,69 +1,46 @@
+use std::collections::HashMap;
 use std::fs;
 
 pub fn parabolic_reflector_dish() {
     let contents = fs::read_to_string("./src/solutions/day14/input.txt")
         .expect("Should have been able to read the file");
 
-//     let contents = String::from("O....#....
-// O.OO#....#
-// .....##...
-// OO.#O....O
-// .O.....O#.
-// O.#..O.#.#
-// ..O..#O..O
-// .......O..
-// #....###..
-// #OO..#....");
-
-    println!("\npart1: {:?}", part2(&contents));
+    println!("part1: {:?}", part1(&contents));
+    println!("part2: {:?}", part2(&contents));
 }
 
 fn part1(contents: &String) -> usize {
-    println!("{}\n", contents);
-
-    let mut dish:Vec<Vec<char>> = Vec::new();
-    for line in contents.lines() {
-        if !line.is_empty() {
-            dish.push(line.chars().collect::<Vec<char>>())
-        }
-    }
-
-    let mut sum = 0;
-
+    let mut dish:Vec<Vec<char>> = parse(contents);
     for i in 0..dish.len() {
         for j in 0..dish[i].len() {
             if dish[i][j] != 'O' { continue; }
             tilt_north(i, j, &mut dish);
         }
     }
-
-
-    for i in 0..dish.len() {
-        for j in 0..dish[i].len() {
-            if dish[i][j] == 'O' {
-                sum += dish.len() - i;
-            }
-        }
-    }
-    sum
+    calculate_weight(dish)
 }
 
 fn part2(contents: &String) -> usize {
-    println!("{}\n", contents);
+    let mut dish:Vec<Vec<char>> = parse(contents);
+    for _ in 0..1000 {
+        rotate(&mut dish);
+    }
+    calculate_weight(dish)
+}
 
+fn parse(input: &String) -> Vec<Vec<char>>{
     let mut dish:Vec<Vec<char>> = Vec::new();
-    for line in contents.lines() {
+    for line in input.lines() {
         if !line.is_empty() {
             dish.push(line.chars().collect::<Vec<char>>())
         }
     }
+    dish
+}
 
+fn calculate_weight(dish: Vec<Vec<char>>) -> usize {
     let mut sum = 0;
 
-    for i in 0..1000 {
-        println!("{}", 1000 - i);
-        rotate(&mut dish);
-    }
     for i in 0..dish.len() {
         for j in 0..dish[i].len() {
             if dish[i][j] == 'O' {
@@ -71,6 +48,7 @@ fn part2(contents: &String) -> usize {
             }
         }
     }
+
     sum
 }
 
@@ -78,82 +56,34 @@ fn rotate(dish: &mut Vec<Vec<char>>) {
 
     let height = dish.len() - 1;
     let width = dish[0].len() - 1;
-    // println!("\nnorth");
-    for i in 0..dish.len() {
-        for j in 0..dish[i].len() {
+
+    for i in 0..height + 1 {
+        for j in 0..width + 1 {
             if dish[i][j] != 'O' { continue; }
             tilt_north(i, j, dish);
         }
     }
 
-
-    // for i in 0..dish.len() {
-    //     for j in 0..dish[i].len() {
-    //         print!("{}", dish[i][j]);
-    //         if dish[i][j] == 'O' {
-    //             // sum += dish.len() - i;
-    //         }
-    //     }
-    //     println!();
-    // }
-
-    // println!("\nwest");
-    for i in 0..dish.len() {
-        for j in 0..dish[i].len() {
+    for i in 0..height + 1 {
+        for j in 0..width + 1 {
             if dish[i][j] != 'O' { continue; }
             tilt_west(i, j, dish);
         }
     }
 
-    //
-    // for i in 0..dish.len() {
-    //     for j in 0..dish[i].len() {
-    //         print!("{}", dish[i][j]);
-    //         if dish[i][j] == 'O' {
-    //             // sum += dish.len() - i;
-    //         }
-    //     }
-    //     println!();
-    // }
-
-
-    // println!("\nsouth");
-    for i in 0..dish.len() {
-        for j in 0..dish[height-i].len() {
+    for i in 0..height + 1 {
+        for j in 0..width + 1 {
             if dish[height-i][j] != 'O' { continue; }
             tilt_south(height - i, j, dish);
         }
     }
 
-    //
-    // for i in 0..dish.len() {
-    //     for j in 0..dish[i].len() {
-    //         print!("{}", dish[i][j]);
-    //         if dish[i][j] == 'O' {
-    //             // sum += dish.len() - i;
-    //         }
-    //     }
-    //     println!();
-    // }
-
-    // println!("\neast");
-    for i in 0..dish.len() {
-        for j in 0..dish[i].len() {
+    for i in 0..height + 1 {
+        for j in 0..width + 1 {
             if dish[i][width - j] != 'O' { continue; }
             tilt_east(i, width - j, dish);
         }
     }
-
-    //
-    // for i in 0..dish.len() {
-    //     for j in 0..dish[i].len() {
-    //         print!("{}", dish[i][j]);
-    //         if dish[i][j] == 'O' {
-    //             // sum += dish.len() - i;
-    //         }
-    //     }
-    //     println!();
-    // }
 }
 
 fn tilt_north(i: usize, j: usize, dish: &mut Vec<Vec<char>>){
