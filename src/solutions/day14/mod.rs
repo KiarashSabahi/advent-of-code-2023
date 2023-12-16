@@ -32,21 +32,8 @@ fn part1(contents: &String) -> usize {
 
     for i in 0..dish.len() {
         for j in 0..dish[i].len() {
-            if dish[i][j] != 'O' { continue }
-            let mut target = i;
-            while target != 0{
-                if dish[target - 1][j] != '.'{
-                    break;
-                } else {
-                    target -= 1;
-                }
-            }
-
-            if target != i {
-                dish[i][j] = '.';
-                dish[target][j] = 'O';
-            }
-
+            if dish[i][j] != 'O' { continue; }
+            tilt_up(i, j, &mut dish);
         }
     }
 
@@ -55,9 +42,24 @@ fn part1(contents: &String) -> usize {
         for j in 0..dish[i].len() {
             if dish[i][j] == 'O' {
                 sum += dish.len() - i;
-                println!("{}", dish.len() - i);
             }
         }
     }
     sum
+}
+
+fn tilt_up(i: usize, j: usize, dish: &mut Vec<Vec<char>>){
+    let mut target = i;
+    while target != 0{
+        if dish[target - 1][j] != '.'{
+            break;
+        } else {
+            target -= 1;
+        }
+    }
+
+    if target != i {
+        dish[i][j] = '.';
+        dish[target][j] = 'O';
+    }
 }
