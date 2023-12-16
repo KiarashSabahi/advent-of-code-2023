@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::fs;
 
 pub fn parabolic_reflector_dish() {
